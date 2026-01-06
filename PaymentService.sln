@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E5111705-26A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Infrastructure.DataAccess", "src\Infrastructure\PaymentService.Infrastructure.DataAccess\PaymentService.Infrastructure.DataAccess.csproj", "{137BA42D-BF1E-4BB8-94A6-E4F05315BD7B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Application.Models", "src\Application\PaymentService.Application.Models\PaymentService.Application.Models.csproj", "{271FB11C-F9C2-44EB-A986-EE2B9026F1B5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,11 +22,16 @@ Global
 		{137BA42D-BF1E-4BB8-94A6-E4F05315BD7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{137BA42D-BF1E-4BB8-94A6-E4F05315BD7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{137BA42D-BF1E-4BB8-94A6-E4F05315BD7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{271FB11C-F9C2-44EB-A986-EE2B9026F1B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{271FB11C-F9C2-44EB-A986-EE2B9026F1B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{271FB11C-F9C2-44EB-A986-EE2B9026F1B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{271FB11C-F9C2-44EB-A986-EE2B9026F1B5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6EC29018-2243-4B9E-A9D3-42AA179F58EB} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
 		{00FF1DB4-FAED-48AC-A669-7147AA641EFF} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
 		{2BC124E6-910C-4EE4-8AC1-5BFC09E96086} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
 		{137BA42D-BF1E-4BB8-94A6-E4F05315BD7B} = {6EC29018-2243-4B9E-A9D3-42AA179F58EB}
+		{271FB11C-F9C2-44EB-A986-EE2B9026F1B5} = {00FF1DB4-FAED-48AC-A669-7147AA641EFF}
 	EndGlobalSection
 EndGlobal
