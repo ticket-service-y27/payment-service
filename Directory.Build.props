@@ -38,16 +38,4 @@
         <InternalsVisibleTo Include="$(AssemblyName).Tests"/>
     </ItemGroup>
 
-    <Target Name="Install git hooks" BeforeTargets="Build">
-
-        <Message Importance="high" Text="aaa"/>
-
-        <Exec Condition="'$(OS)' == 'Windows_NT' AND Exists('$(MSBuildThisFileDirectory).git')"
-              Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory).githooks\install.ps1&quot; &quot;$(MSBuildThisFileDirectory)&quot;"/>
-
-        <Exec Condition="'$(OS)' != 'Windows_NT' AND Exists('$(MSBuildThisFileDirectory).git')"
-              Command="bash &quot;$(MSBuildThisFileDirectory).githooks/install.sh&quot;  &quot;$(MSBuildThisFileDirectory)&quot;"/>
-
-    </Target>
-
 </Project>
