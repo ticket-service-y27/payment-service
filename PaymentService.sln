@@ -8,6 +8,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Infrastructure.DataAccess", "Infrastructure\PaymentService.Infrastructure.DataAccess\PaymentService.Infrastructure.DataAccess.csproj", "{F9C9013F-DE6D-4442-B9E2-AF43946CAB0A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{E5111705-26A4-41ED-8B76-3A9CD687D6C9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,5 +23,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{F9C9013F-DE6D-4442-B9E2-AF43946CAB0A} = {6EC29018-2243-4B9E-A9D3-42AA179F58EB}
+		{6EC29018-2243-4B9E-A9D3-42AA179F58EB} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
+		{00FF1DB4-FAED-48AC-A669-7147AA641EFF} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
+		{2BC124E6-910C-4EE4-8AC1-5BFC09E96086} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
 	EndGlobalSection
 EndGlobal
