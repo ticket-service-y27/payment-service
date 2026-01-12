@@ -7,7 +7,7 @@ using System.Transactions;
 
 namespace PaymentService.Application.Payments;
 
-public class PaymentService : IPaymentService
+public class PaymentsService : IPaymentService
 {
     private const int ZeroValue = 0;
 
@@ -15,7 +15,7 @@ public class PaymentService : IPaymentService
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
 
-    public PaymentService(
+    public PaymentsService(
         IPaymentRepository paymentRepository,
         IWalletRepository walletRepository,
         IWalletTransactionRepository walletTransactionRepository)
