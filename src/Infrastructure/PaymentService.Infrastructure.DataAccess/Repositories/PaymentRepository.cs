@@ -1,9 +1,7 @@
 using Npgsql;
 using PaymentService.Application.Abstractions.Repositories;
 using PaymentService.Application.Models.Payments;
-using PaymentService.Application.Models.Payments.Payloads;
 using System.Runtime.CompilerServices;
-using System.Text.Json;
 
 namespace PaymentService.Infrastructure.DataAccess.Repositories;
 
@@ -41,19 +39,17 @@ public class PaymentRepository : IPaymentRepository
             Status: reader.GetFieldValue<PaymentStatus>(2),
             Amount: reader.GetInt64(3),
             CreatedAt: reader.GetFieldValue<DateTimeOffset>(4),
-            UpdatedAt: reader.GetFieldValue<DateTimeOffset>(5),
-            PaymentPayload: JsonSerializer.Deserialize<PaymentPayload>(reader.GetString(6)));
+            UpdatedAt: reader.GetFieldValue<DateTimeOffset>(5));
     }
 
     public async Task<long?> CreateAsync(
         long walletId,
         long amount,
-        PaymentPayload payload,
         CancellationToken cancellationToken)
     {
         const string sql = """
-                           insert into payments (wallet_id, status, amount, created_at, updated_at, payload)
-                           values (@WalletId, @Status, @Amount, @Now, @Now, @Payload::jsonb)
+                           insert into payments (wallet_id, status, amount, created_at, updated_at)
+                           values (@WalletId, @Status, @Amount, @Now, @Now)
                            returning payment_id
                            """;
 
@@ -71,7 +67,6 @@ public class PaymentRepository : IPaymentRepository
         });
         command.Parameters.Add(new NpgsqlParameter("@Amount", amount));
         command.Parameters.Add(new NpgsqlParameter("@Now", DateTimeOffset.UtcNow));
-        command.Parameters.Add(new NpgsqlParameter("@Payload", JsonSerializer.Serialize(payload)));
 
         return (long?)(await command.ExecuteScalarAsync(cancellationToken) ?? null);
     }
@@ -108,7 +103,7 @@ public class PaymentRepository : IPaymentRepository
         long? cursor)
     {
         const string sql = """
-                           select payment_id, wallet_id, status, amount, created_at, updated_at, payload
+                           select payment_id, wallet_id, status, amount, created_at, updated_at
                            from payments
                            where wallet_id = @WalletId
                              and (@Cursor is null or payment_id > @Cursor)
@@ -135,8 +130,7 @@ public class PaymentRepository : IPaymentRepository
                 Status: reader.GetFieldValue<PaymentStatus>(2),
                 Amount: reader.GetInt64(3),
                 CreatedAt: reader.GetFieldValue<DateTimeOffset>(4),
-                UpdatedAt: reader.GetFieldValue<DateTimeOffset>(5),
-                PaymentPayload: JsonSerializer.Deserialize<PaymentPayload>(reader.GetString(6)));
+                UpdatedAt: reader.GetFieldValue<DateTimeOffset>(5));
         }
     }
 }

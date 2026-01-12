@@ -1,5 +1,3 @@
-using PaymentService.Application.Models.Payments.Payloads;
-
 namespace PaymentService.Application.Models.Payments;
 
 public record Payment(
@@ -8,5 +6,4 @@ public record Payment(
     long Amount,
     PaymentStatus Status,
     DateTimeOffset CreatedAt,
-    DateTimeOffset UpdatedAt,
-    PaymentPayload? PaymentPayload);
+    DateTimeOffset UpdatedAt);
