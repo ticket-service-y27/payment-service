@@ -4,8 +4,6 @@ namespace PaymentService.Application.Contracts.Payments;
 
 public interface IPaymentService
 {
-    Task<Payment?> GetPaymentByIdAsync(long paymentId, CancellationToken cancellationToken);
-
     Task<IAsyncEnumerable<Payment>> GetPaymentsAsync(long walletId, CancellationToken cancellationToken, long? cursor);
 
     Task<long> CreatePaymentAsync(long walletId, long amount, CancellationToken cancellationToken);
