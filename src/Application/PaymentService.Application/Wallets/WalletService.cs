@@ -8,6 +8,8 @@ namespace PaymentService.Application.Wallets;
 
 public class WalletService : IWalletService
 {
+    private const int ZeroValue = 0;
+
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
 
@@ -56,6 +58,11 @@ public class WalletService : IWalletService
             throw new WalletException("wallet is blocked");
         }
 
+        if (amount <= ZeroValue)
+        {
+            throw new WalletException("amount must be greater than zero");
+        }
+
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
@@ -87,11 +94,6 @@ public class WalletService : IWalletService
         if (wallet == null)
         {
             throw new WalletException("wallet not found");
-        }
-
-        if (wallet.IsBlocked)
-        {
-            throw new WalletException("wallet is blocked");
         }
 
         using var scope = new TransactionScope(

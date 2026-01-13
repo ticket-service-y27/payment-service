@@ -7,7 +7,7 @@ public class CreatePaymentsTable : Migration
 {
     public override void Up()
     {
-        Execute.Sql("CREATE TYPE IF NOT EXISTS payment_status AS ENUM('pending', 'succeeded', 'failed', 'refunded');");
+        Execute.Sql("CREATE TYPE payment_status AS ENUM('pending', 'succeeded', 'failed', 'refunded');");
 
         Create.Table("payments")
             .WithColumn("payment_id").AsInt64().PrimaryKey().Identity()
@@ -15,8 +15,7 @@ public class CreatePaymentsTable : Migration
             .WithColumn("status").AsCustom("payment_status").NotNullable()
             .WithColumn("amount").AsInt64().NotNullable()
             .WithColumn("created_at").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset)
-            .WithColumn("updated_at").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset)
-            .WithColumn("payload").AsCustom("jsonb").NotNullable();
+            .WithColumn("updated_at").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset);
     }
 
     public override void Down()

@@ -25,6 +25,18 @@ public class PaymentsService : IPaymentService
         _walletTransactionRepository = walletTransactionRepository;
     }
 
+    public async Task<Payment?> GetByIdAsync(long paymentId, CancellationToken cancellationToken)
+    {
+        Payment? payment = await _paymentRepository.GetAsync(paymentId, cancellationToken);
+
+        if (payment == null)
+        {
+            throw new PaymentException("payment not found");
+        }
+
+        return payment;
+    }
+
     public async Task<IAsyncEnumerable<Payment>> GetPaymentsAsync(
         long walletId,
         CancellationToken cancellationToken,

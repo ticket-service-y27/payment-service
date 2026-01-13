@@ -7,7 +7,7 @@ public class CreateWalletTransactionsTable : Migration
 {
     public override void Up()
     {
-        Execute.Sql("CREATE TYPE IF NOT EXISTS transaction_type AS ENUM ('topup', 'payment', 'refund');");
+        Execute.Sql("CREATE TYPE transaction_type AS ENUM ('topup', 'payment', 'refund');");
 
         Create.Table("wallet_transactions")
             .WithColumn("transaction_id").AsInt64().PrimaryKey().Identity()

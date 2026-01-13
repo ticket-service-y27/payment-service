@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package payment.payments.v1;
+
+option csharp_namespace = "PaymentService.Grpc.Payments";
+
+import "google/protobuf/timestamp.proto";
+
+service PaymentsService {
+  rpc GetPaymentById (GetPaymentByIdRequest) returns (GetPaymentByIdResponse);
+  rpc GetPayments (GetPaymentsRequest) returns (GetPaymentsResponse);
+  rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse);
+}
+
+enum PaymentStatus {
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+  PAYMENT_STATUS_PENDING = 1;
+  PAYMENT_STATUS_SUCCEEDED = 2;
+  PAYMENT_STATUS_FAILED = 3;
+  PAYMENT_STATUS_REFUNDED = 4;
+}
+
+message Payment {
+  int64 payment_id = 1;
+  int64 wallet_id = 2;
+  int64 amount = 3;
+  PaymentStatus status = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetPaymentByIdRequest {
+  int64 payment_id = 1;
+}
+
+message GetPaymentByIdResponse {
+  Payment payment = 1;
+}
+
+message GetPaymentsRequest {
+  int64 wallet_id = 1;
+  int64 cursor = 2;
+}
+
+message GetPaymentsResponse {
+  repeated Payment payment = 1;
+}
+
+message CreatePaymentRequest {
+  int64 wallet_id = 1;
+  int64 amount = 2;
+}
+
+message CreatePaymentResponse {
+  int64 payment_id = 1;
+}

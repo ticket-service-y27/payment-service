@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Google.Protobuf" />
+      <PackageReference Include="Grpc.AspNetCore" />
+      <PackageReference Include="Grpc.Tools">
+        <PrivateAssets>all</PrivateAssets>
+      </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf ProtoRoot="Protos" Include="Protos\**\*.proto" GrpcServices="Server" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Application\PaymentService.Application.Contracts\PaymentService.Application.Contracts.csproj" />
+      <ProjectReference Include="..\..\Application\PaymentService.Application\PaymentService.Application.csproj" />
+      <ProjectReference Include="..\..\Infrastructure\PaymentService.Infrastructure.DataAccess\PaymentService.Infrastructure.DataAccess.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>

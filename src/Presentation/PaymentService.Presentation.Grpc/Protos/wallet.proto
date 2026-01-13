@@ -1,0 +1,35 @@
+syntax = "proto3";
+
+package payment.wallet.v1;
+
+option csharp_namespace = "PaymentService.Grpc.Wallets";
+
+import "google/protobuf/timestamp.proto";
+
+service WalletService {
+  rpc TopUpWallet (TopUpWalletRequest) returns (TopUpWalletResponse);
+  rpc SetBlockStatus (SetBlockStatusRequest) returns (SetBlockStatusResponse);
+}
+
+message Wallet {
+  int64 wallet_id = 1;
+  int64 user_id = 2;
+  int64 balance = 3;
+  bool is_blocked = 4;
+  google.protobuf.Timestamp created_at = 5;
+  google.protobuf.Timestamp updated_at = 6;
+}
+
+message TopUpWalletRequest {
+  int64 wallet_id = 1;
+  int64 amount = 2;
+}
+
+message TopUpWalletResponse {}
+
+message SetBlockStatusRequest {
+  int64 wallet_id = 1;
+  bool is_blocked = 2;
+}
+
+message SetBlockStatusResponse {}
