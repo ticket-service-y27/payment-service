@@ -1,4 +1,3 @@
-using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentService.Application.Extensions;
@@ -18,17 +17,12 @@ builder.Services
     .AddDatabaseOptions(builder.Configuration)
     .AddMigrations()
     .AddNpgsqlDataSource()
+    .AddMigrationHostedService()
     .AddRepositories()
     .AddApplication()
     .AddSingleton<ModelMapper>();
 
 WebApplication app = builder.Build();
-
-using (IServiceScope scope = app.Services.CreateScope())
-{
-    IMigrationRunner runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-    runner.MigrateUp();
-}
 
 app.MapGrpcService<PaymentGrpcService>();
 app.MapGrpcService<WalletGrpcService>();

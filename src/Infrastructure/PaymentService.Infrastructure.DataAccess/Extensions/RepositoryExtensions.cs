@@ -9,6 +9,7 @@ using PaymentService.Application.Models.Transactions;
 using PaymentService.Infrastructure.DataAccess.Migrations;
 using PaymentService.Infrastructure.DataAccess.Options;
 using PaymentService.Infrastructure.DataAccess.Repositories;
+using PaymentService.Infrastructure.DataAccess.Services;
 
 namespace PaymentService.Infrastructure.DataAccess.Extensions;
 
@@ -19,6 +20,13 @@ public static class RepositoryExtensions
         services.AddOptions<DatabaseSettings>()
             .Bind(configuration.GetSection("DatabaseSettings"));
 
+        return services;
+    }
+
+    public static IServiceCollection AddMigrationHostedService(
+        this IServiceCollection services)
+    {
+        services.AddHostedService<MigrationHostedService>();
         return services;
     }
 
