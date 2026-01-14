@@ -23,6 +23,7 @@
       <ProjectReference Include="..\..\Application\PaymentService.Application.Contracts\PaymentService.Application.Contracts.csproj" />
       <ProjectReference Include="..\..\Application\PaymentService.Application\PaymentService.Application.csproj" />
       <ProjectReference Include="..\..\Infrastructure\PaymentService.Infrastructure.DataAccess\PaymentService.Infrastructure.DataAccess.csproj" />
+      <ProjectReference Include="..\PaymentService.Presentation.Kafka\PaymentService.Presentation.Kafka.csproj" />
     </ItemGroup>
 
     <ItemGroup>

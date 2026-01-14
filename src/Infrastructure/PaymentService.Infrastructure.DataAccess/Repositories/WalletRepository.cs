@@ -74,6 +74,7 @@ public class WalletRepository : IWalletRepository
         const string sql = """
                            insert into wallets (user_id, balance, is_blocked, created_at, updated_at)
                            values (@UserId, 0, false, @Now, @Now)
+                           RETURNING wallet_id
                            """;
 
         DateTimeOffset time = DateTimeOffset.UtcNow;

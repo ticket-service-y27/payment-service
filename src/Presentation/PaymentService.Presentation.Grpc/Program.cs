@@ -5,6 +5,7 @@ using PaymentService.Infrastructure.DataAccess.Extensions;
 using PaymentService.Presentation.Grpc.Interceptors;
 using PaymentService.Presentation.Grpc.Mapper;
 using PaymentService.Presentation.Grpc.Services;
+using PaymentService.Presentation.Kafka.Extensions;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -20,7 +21,8 @@ builder.Services
     .AddMigrationHostedService()
     .AddRepositories()
     .AddApplication()
-    .AddSingleton<ModelMapper>();
+    .AddSingleton<ModelMapper>()
+    .AddPresentationKafka(builder.Configuration);
 
 WebApplication app = builder.Build();
 

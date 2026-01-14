@@ -20,6 +20,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Application"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Presentation.Grpc", "src\Presentation\PaymentService.Presentation.Grpc\PaymentService.Presentation.Grpc.csproj", "{35070C99-0B81-4E73-B18D-9F19ECE01A5E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PaymentService.Presentation.Kafka", "src\Presentation\PaymentService.Presentation.Kafka\PaymentService.Presentation.Kafka.csproj", "{D15144BF-3659-4A4F-BDF2-854DA7662CFD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{35070C99-0B81-4E73-B18D-9F19ECE01A5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{35070C99-0B81-4E73-B18D-9F19ECE01A5E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{35070C99-0B81-4E73-B18D-9F19ECE01A5E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D15144BF-3659-4A4F-BDF2-854DA7662CFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D15144BF-3659-4A4F-BDF2-854DA7662CFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D15144BF-3659-4A4F-BDF2-854DA7662CFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D15144BF-3659-4A4F-BDF2-854DA7662CFD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6EC29018-2243-4B9E-A9D3-42AA179F58EB} = {E5111705-26A4-41ED-8B76-3A9CD687D6C9}
@@ -61,5 +67,6 @@ Global
 		{0EAE1A14-1944-4CD3-882F-888DFB9F0159} = {00FF1DB4-FAED-48AC-A669-7147AA641EFF}
 		{54BE79A5-26B7-4D10-AA2C-1F826197F600} = {00FF1DB4-FAED-48AC-A669-7147AA641EFF}
 		{35070C99-0B81-4E73-B18D-9F19ECE01A5E} = {2BC124E6-910C-4EE4-8AC1-5BFC09E96086}
+		{D15144BF-3659-4A4F-BDF2-854DA7662CFD} = {2BC124E6-910C-4EE4-8AC1-5BFC09E96086}
 	EndGlobalSection
 EndGlobal

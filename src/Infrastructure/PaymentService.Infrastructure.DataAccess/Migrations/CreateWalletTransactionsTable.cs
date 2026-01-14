@@ -14,7 +14,7 @@ public class CreateWalletTransactionsTable : Migration
             .WithColumn("wallet_id").AsInt64().NotNullable().ForeignKey("wallets", "wallet_id")
             .WithColumn("type").AsCustom("transaction_type").NotNullable()
             .WithColumn("amount").AsInt64().NotNullable()
-            .WithColumn("payment_id").AsInt64().ForeignKey("payments", "payment_id")
+            .WithColumn("payment_id").AsInt64().Nullable().ForeignKey("payments", "payment_id")
             .WithColumn("created_at").AsDateTimeOffset().NotNullable().WithDefault(SystemMethods.CurrentDateTimeOffset);
     }
 

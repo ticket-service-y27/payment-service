@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Application\PaymentService.Application.Contracts\PaymentService.Application.Contracts.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Google.Protobuf" />
+        <PackageReference Include="Grpc.AspNetCore" />
+        <PackageReference Include="Grpc.Tools">
+            <PrivateAssets>all</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="Itmo.Dev.Platform.Kafka" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf ProtoRoot="Protos" Include="Protos\**\*.proto" GrpcServices="Server" />
+    </ItemGroup>
+
+</Project>
