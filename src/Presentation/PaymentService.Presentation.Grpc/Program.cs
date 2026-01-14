@@ -1,3 +1,4 @@
+using Itmo.Dev.Platform.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentService.Application.Extensions;
@@ -23,6 +24,9 @@ builder.Services
     .AddApplication()
     .AddSingleton<ModelMapper>()
     .AddPresentationKafka(builder.Configuration);
+
+builder.Services.AddPlatformEvents(events => events
+    .AddPresentationKafkaEventHandlers());
 
 WebApplication app = builder.Build();
 

@@ -71,6 +71,9 @@ services:
 
       kafka.clusters.0.serde.0.properties.protobufMessageNameForKeyByTopic.user_creation: users.UserEventKey
       kafka.clusters.0.serde.0.properties.protobufMessageNameByTopic.user_creation: users.UserEventValue
+      
+      kafka.clusters.0.serde.0.properties.protobufMessageNameForKeyByTopic.payment_status: payments.PaymentStatusKey
+      kafka.clusters.0.serde.0.properties.protobufMessageNameByTopic.payment_status: payments.PaymentStatusValue
 
 networks:
   csms-ticket-service-network:

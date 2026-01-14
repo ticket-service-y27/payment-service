@@ -13,6 +13,7 @@
       <PackageReference Include="Grpc.Tools">
         <PrivateAssets>all</PrivateAssets>
       </PackageReference>
+      <PackageReference Include="Itmo.Dev.Platform.Events" />
     </ItemGroup>
 
     <ItemGroup>

@@ -1,4 +1,6 @@
+using Itmo.Dev.Platform.Events;
 using PaymentService.Application.Abstractions.Repositories;
+using PaymentService.Application.Contracts.Events;
 using PaymentService.Application.Contracts.Payments;
 using PaymentService.Application.Models.Payments;
 using PaymentService.Application.Models.Transactions;
@@ -14,15 +16,18 @@ public class PaymentsService : IPaymentService
     private readonly IPaymentRepository _paymentRepository;
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
+    private readonly IEventPublisher _eventPublisher;
 
     public PaymentsService(
         IPaymentRepository paymentRepository,
         IWalletRepository walletRepository,
-        IWalletTransactionRepository walletTransactionRepository)
+        IWalletTransactionRepository walletTransactionRepository,
+        IEventPublisher eventPublisher)
     {
         _paymentRepository = paymentRepository;
         _walletRepository = walletRepository;
         _walletTransactionRepository = walletTransactionRepository;
+        _eventPublisher = eventPublisher;
     }
 
     public async Task<Payment?> GetByIdAsync(long paymentId, CancellationToken cancellationToken)
@@ -83,6 +88,9 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("payment can't be created");
         }
 
+        var evt = new PaymentPendingEvent((long)paymentId, walletId, amount);
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
+
         scope.Complete();
         return (long)paymentId;
     }
@@ -120,6 +128,8 @@ public class PaymentsService : IPaymentService
 
         long newBalance = wallet.Balance - payment.Amount;
 
+        var evt = new PaymentSucceededEvent(paymentId, wallet.Id, payment.Amount);
+
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
@@ -139,6 +149,7 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("transaction can't be created");
         }
 
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
         await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Succeeded, cancellationToken);
         scope.Complete();
     }
@@ -157,12 +168,15 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("payment status must be pending");
         }
 
+        var evt = new PaymentFailedEvent(paymentId, payment.WalletId, payment.Amount);
+
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
             TransactionScopeAsyncFlowOption.Enabled);
 
         await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Failed, cancellationToken);
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
         scope.Complete();
     }
 
@@ -194,6 +208,8 @@ public class PaymentsService : IPaymentService
 
         long newBalance = wallet.Balance + payment.Amount;
 
+        var evt = new PaymentRefundedEvent(paymentId, wallet.Id, payment.Amount);
+
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
@@ -213,6 +229,7 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("transaction can't be created");
         }
 
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
         await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Refunded, cancellationToken);
         scope.Complete();
     }
