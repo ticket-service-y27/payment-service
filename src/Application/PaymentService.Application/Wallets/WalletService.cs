@@ -87,9 +87,9 @@ public class WalletService : IWalletService
         scope.Complete();
     }
 
-    public async Task SetBlockStatusAsync(long walletId, bool isBlocked, CancellationToken cancellationToken)
+    public async Task SetBlockStatusAsync(long userId, bool isBlocked, CancellationToken cancellationToken)
     {
-        Wallet? wallet = await _walletRepository.GetByIdAsync(walletId, cancellationToken);
+        Wallet? wallet = await _walletRepository.GetByUserIdAsync(userId, cancellationToken);
 
         if (wallet == null)
         {
@@ -101,7 +101,7 @@ public class WalletService : IWalletService
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
             TransactionScopeAsyncFlowOption.Enabled);
 
-        await _walletRepository.SetBlockedAsync(walletId, isBlocked, cancellationToken);
+        await _walletRepository.SetBlockedAsync(wallet.Id, isBlocked, cancellationToken);
         scope.Complete();
     }
 }

@@ -6,5 +6,5 @@ public interface IWalletService
 
     Task TopUpWalletAsync(long walletId, long amount, CancellationToken cancellationToken);
 
-    Task SetBlockStatusAsync(long walletId, bool isBlocked, CancellationToken cancellationToken);
+    Task SetBlockStatusAsync(long userId, bool isBlocked, CancellationToken cancellationToken);
 }

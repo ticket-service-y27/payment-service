@@ -16,11 +16,19 @@
         <PackageReference Include="Grpc.Tools">
             <PrivateAssets>all</PrivateAssets>
         </PackageReference>
+        <PackageReference Include="Itmo.Dev.Platform.Events" />
         <PackageReference Include="Itmo.Dev.Platform.Kafka" />
     </ItemGroup>
 
     <ItemGroup>
-        <Protobuf ProtoRoot="Protos" Include="Protos\**\*.proto" GrpcServices="Server" />
+        <Protobuf ProtoRoot="Protos" Include="Protos\**\*.proto" GrpcServices="Both" />
+        <Protobuf Update="Protos\payment_status.proto">
+          <Access>Public</Access>
+          <ProtoCompile>True</ProtoCompile>
+          <CompileOutputs>True</CompileOutputs>
+          <OutputDir>obj/Debug/net9.0/</OutputDir>
+          <Generator>MSBuild:Compile</Generator>
+        </Protobuf>
     </ItemGroup>
 
 </Project>

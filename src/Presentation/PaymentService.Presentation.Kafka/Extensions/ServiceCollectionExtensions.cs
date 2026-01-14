@@ -17,12 +17,12 @@ public static class ServiceCollectionExtensions
         collection.AddPlatformKafka(kafka => kafka
             .ConfigureOptions(configuration.GetSection("Presentation:Kafka"))
             .AddConsumer(consumer => consumer
-                .WithKey<UserCreationKey>()
-                .WithValue<UserCreationValue>()
+                .WithKey<UserEventKey>()
+                .WithValue<UserEventValue>()
                 .WithConfiguration(configuration.GetSection($"{consumerKey}:UserCreation"))
                 .DeserializeKeyWithProto()
                 .DeserializeValueWithProto()
-                .HandleWith<UserCreationHandler>()));
+                .HandleWith<UserConsumerHandler>()));
 
         return collection;
     }
