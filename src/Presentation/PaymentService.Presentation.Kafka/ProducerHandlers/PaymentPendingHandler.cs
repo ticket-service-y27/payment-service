@@ -26,9 +26,9 @@ public class PaymentPendingHandler : IEventHandler<PaymentPendingEvent>
         {
             PaymentPending = new PaymentStatusValue.Types.PaymentPending
             {
-                PaymentId = evt.PaymentId,
                 WalletId = evt.WalletId,
                 Amount = evt.Amount,
+                UserId = evt.UserId,
             },
         };
 

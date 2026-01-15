@@ -34,6 +34,4 @@ app.MapGrpcService<PaymentGrpcService>();
 app.MapGrpcService<WalletGrpcService>();
 app.MapGrpcService<WalletTransactionGrpcService>();
 
-app.MapGet("/", () => "Hello World!");
-
 app.Run();

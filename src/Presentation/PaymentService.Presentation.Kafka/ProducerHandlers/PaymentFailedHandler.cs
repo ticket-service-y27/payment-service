@@ -26,9 +26,9 @@ public class PaymentFailedHandler : IEventHandler<PaymentFailedEvent>
         {
             PaymentFailed = new PaymentStatusValue.Types.PaymentFailed
             {
-                PaymentId = evt.PaymentId,
                 WalletId = evt.WalletId,
                 Amount = evt.Amount,
+                UserId = evt.UserId,
             },
         };
 

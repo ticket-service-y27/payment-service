@@ -88,7 +88,7 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("payment can't be created");
         }
 
-        var evt = new PaymentPendingEvent((long)paymentId, walletId, amount);
+        var evt = new PaymentPendingEvent((long)paymentId, walletId, amount, wallet.UserId);
         await _eventPublisher.PublishAsync(evt, cancellationToken);
 
         scope.Complete();
@@ -128,7 +128,7 @@ public class PaymentsService : IPaymentService
 
         long newBalance = wallet.Balance - payment.Amount;
 
-        var evt = new PaymentSucceededEvent(paymentId, wallet.Id, payment.Amount);
+        var evt = new PaymentSucceededEvent(paymentId, wallet.Id, payment.Amount, wallet.UserId);
 
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
@@ -163,12 +163,18 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("payment not found");
         }
 
+        Wallet? wallet = await _walletRepository.GetByIdAsync(payment.WalletId, cancellationToken);
+        if (wallet == null)
+        {
+            throw new PaymentException("wallet not found");
+        }
+
         if (payment.Status != PaymentStatus.Pending)
         {
             throw new PaymentException("payment status must be pending");
         }
 
-        var evt = new PaymentFailedEvent(paymentId, payment.WalletId, payment.Amount);
+        var evt = new PaymentFailedEvent(paymentId, payment.WalletId, payment.Amount, wallet.UserId);
 
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
@@ -208,7 +214,7 @@ public class PaymentsService : IPaymentService
 
         long newBalance = wallet.Balance + payment.Amount;
 
-        var evt = new PaymentRefundedEvent(paymentId, wallet.Id, payment.Amount);
+        var evt = new PaymentRefundedEvent(paymentId, wallet.Id, payment.Amount, wallet.UserId);
 
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,

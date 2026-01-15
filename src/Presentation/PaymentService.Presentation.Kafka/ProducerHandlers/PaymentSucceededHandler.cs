@@ -26,9 +26,9 @@ public class PaymentSucceededHandler : IEventHandler<PaymentSucceededEvent>
         {
             PaymentSucceeded = new PaymentStatusValue.Types.PaymentSucceeded
             {
-                PaymentId = evt.PaymentId,
                 WalletId = evt.WalletId,
                 Amount = evt.Amount,
+                UserId = evt.UserId,
             },
         };
 

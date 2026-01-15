@@ -24,11 +24,11 @@ public class PaymentRefundedHandler : IEventHandler<PaymentRefundedEvent>
 
         var value = new PaymentStatusValue
         {
-            PaymentPending = new PaymentStatusValue.Types.PaymentPending
+            PaymentRefunded = new PaymentStatusValue.Types.PaymentRefunded
             {
-                PaymentId = evt.PaymentId,
                 WalletId = evt.WalletId,
                 Amount = evt.Amount,
+                UserId = evt.UserId,
             },
         };
 
