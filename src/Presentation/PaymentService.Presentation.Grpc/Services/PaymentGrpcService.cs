@@ -22,7 +22,7 @@ public class PaymentGrpcService : PaymentsService.PaymentsServiceBase
         ServerCallContext context)
     {
         long paymentId =
-            await _paymentService.CreatePaymentAsync(request.WalletId, request.Amount, context.CancellationToken);
+            await _paymentService.CreatePaymentAsync(request.UserId, request.Amount, context.CancellationToken);
 
         return new CreatePaymentResponse
         {
@@ -62,5 +62,29 @@ public class PaymentGrpcService : PaymentsService.PaymentsServiceBase
         }
 
         return resp;
+    }
+
+    public override async Task<TransferPaymentToRefundedResponse> TransferPaymentToRefunded(
+        TransferPaymentToRefundedRequest request,
+        ServerCallContext context)
+    {
+        try
+        {
+            await _paymentService.TransferPaymentStatusToFailedAsync(
+                request.PaymentId,
+                context.CancellationToken);
+
+            return new TransferPaymentToRefundedResponse
+            {
+                IsSuccess = true,
+            };
+        }
+        catch
+        {
+            return new TransferPaymentToRefundedResponse
+            {
+                IsSuccess = false,
+            };
+        }
     }
 }

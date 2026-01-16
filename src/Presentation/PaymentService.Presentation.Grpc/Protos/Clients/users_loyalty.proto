@@ -1,0 +1,17 @@
+syntax = "proto3";
+package grpc.users;
+
+option csharp_namespace = "Users.UserService.Contracts";
+
+service UserLoyaltyService {
+  rpc GetUserDiscount(GetUserDiscountRequest) returns (GetUserDiscountResponse);
+}
+
+message GetUserDiscountRequest {
+  int64 user_id = 1;
+}
+
+message GetUserDiscountResponse {
+  int32 discount_percent = 1;
+  bool is_blocked = 2;
+}

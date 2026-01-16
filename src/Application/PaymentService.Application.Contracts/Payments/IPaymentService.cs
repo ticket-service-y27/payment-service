@@ -8,7 +8,7 @@ public interface IPaymentService
 
     Task<IAsyncEnumerable<Payment>> GetPaymentsAsync(long walletId, CancellationToken cancellationToken, long? cursor);
 
-    Task<long> CreatePaymentAsync(long walletId, long amount, CancellationToken cancellationToken);
+    Task<long> CreatePaymentAsync(long userId, long amount, CancellationToken cancellationToken);
 
     Task TransferPaymentStatusToSucceededAsync(long paymentId, CancellationToken cancellationToken);
 

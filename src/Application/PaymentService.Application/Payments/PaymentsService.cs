@@ -1,6 +1,7 @@
 using Itmo.Dev.Platform.Events;
 using PaymentService.Application.Abstractions.Repositories;
 using PaymentService.Application.Contracts.Events;
+using PaymentService.Application.Contracts.Loyalty;
 using PaymentService.Application.Contracts.Payments;
 using PaymentService.Application.Models.Payments;
 using PaymentService.Application.Models.Transactions;
@@ -17,17 +18,20 @@ public class PaymentsService : IPaymentService
     private readonly IWalletRepository _walletRepository;
     private readonly IWalletTransactionRepository _walletTransactionRepository;
     private readonly IEventPublisher _eventPublisher;
+    private readonly IUserLoyaltyClient _userLoyaltyClient;
 
     public PaymentsService(
         IPaymentRepository paymentRepository,
         IWalletRepository walletRepository,
         IWalletTransactionRepository walletTransactionRepository,
-        IEventPublisher eventPublisher)
+        IEventPublisher eventPublisher,
+        IUserLoyaltyClient userLoyaltyClient)
     {
         _paymentRepository = paymentRepository;
         _walletRepository = walletRepository;
         _walletTransactionRepository = walletTransactionRepository;
         _eventPublisher = eventPublisher;
+        _userLoyaltyClient = userLoyaltyClient;
     }
 
     public async Task<Payment?> GetByIdAsync(long paymentId, CancellationToken cancellationToken)
@@ -57,9 +61,9 @@ public class PaymentsService : IPaymentService
         return payments;
     }
 
-    public async Task<long> CreatePaymentAsync(long walletId, long amount, CancellationToken cancellationToken)
+    public async Task<long> CreatePaymentAsync(long userId, long amount, CancellationToken cancellationToken)
     {
-        Wallet? wallet = await _walletRepository.GetByIdAsync(walletId, cancellationToken);
+        Wallet? wallet = await _walletRepository.GetByUserIdAsync(userId, cancellationToken);
 
         if (wallet == null)
         {
@@ -71,7 +75,11 @@ public class PaymentsService : IPaymentService
             throw new PaymentException("wallet is blocked");
         }
 
-        if (amount <= ZeroValue)
+        UserDiscount discount = await _userLoyaltyClient.GetUserLoyalty(wallet.UserId, cancellationToken);
+
+        long finalAmount = amount - (amount * discount.DiscountPercent / 100);
+
+        if (finalAmount <= ZeroValue)
         {
             throw new PaymentException("amount must be more than zero");
         }
@@ -81,14 +89,14 @@ public class PaymentsService : IPaymentService
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
             TransactionScopeAsyncFlowOption.Enabled);
 
-        long? paymentId = await _paymentRepository.CreateAsync(walletId, amount, cancellationToken);
+        long? paymentId = await _paymentRepository.CreateAsync(wallet.Id, finalAmount, cancellationToken);
 
         if (paymentId == null)
         {
             throw new PaymentException("payment can't be created");
         }
 
-        var evt = new PaymentPendingEvent((long)paymentId, walletId, amount, wallet.UserId);
+        var evt = new PaymentPendingEvent((long)paymentId, wallet.Id, finalAmount, wallet.UserId);
         await _eventPublisher.PublishAsync(evt, cancellationToken);
 
         scope.Complete();

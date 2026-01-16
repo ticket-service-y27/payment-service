@@ -10,6 +10,7 @@ service PaymentsService {
   rpc GetPaymentById (GetPaymentByIdRequest) returns (GetPaymentByIdResponse);
   rpc GetPayments (GetPaymentsRequest) returns (GetPaymentsResponse);
   rpc CreatePayment (CreatePaymentRequest) returns (CreatePaymentResponse);
+  rpc TransferPaymentToRefunded (TransferPaymentToRefundedRequest) returns (TransferPaymentToRefundedResponse);
 }
 
 enum PaymentStatus {
@@ -47,10 +48,18 @@ message GetPaymentsResponse {
 }
 
 message CreatePaymentRequest {
-  int64 wallet_id = 1;
+  int64 user_id = 1;
   int64 amount = 2;
 }
 
 message CreatePaymentResponse {
   int64 payment_id = 1;
+}
+
+message TransferPaymentToRefundedRequest{
+  int64 paymentId = 1;
+}
+
+message TransferPaymentToRefundedResponse{
+  bool isSuccess = 1;
 }
