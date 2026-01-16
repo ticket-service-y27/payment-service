@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using PaymentService.Application.Extensions;
 using PaymentService.Infrastructure.DataAccess.Extensions;
+using PaymentService.Presentation.Grpc.Extensions;
 using PaymentService.Presentation.Grpc.Interceptors;
 using PaymentService.Presentation.Grpc.Mapper;
 using PaymentService.Presentation.Grpc.Services;
@@ -23,7 +24,8 @@ builder.Services
     .AddRepositories()
     .AddApplication()
     .AddSingleton<ModelMapper>()
-    .AddPresentationKafka(builder.Configuration);
+    .AddPresentationKafka(builder.Configuration)
+    .AddGrpcUserServiceClient(builder.Configuration);
 
 builder.Services.AddPlatformEvents(events => events
     .AddPresentationKafkaEventHandlers());
