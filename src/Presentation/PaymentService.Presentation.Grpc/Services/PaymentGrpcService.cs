@@ -1,8 +1,10 @@
 using Grpc.Core;
 using PaymentService.Application.Contracts.Payments;
+using PaymentService.Application.Models.Payments;
 using PaymentService.Grpc.Payments;
 using PaymentService.Presentation.Grpc.Mapper;
 using Payment = PaymentService.Application.Models.Payments.Payment;
+using PaymentFailReason = PaymentService.Grpc.Payments.PaymentFailReason;
 
 namespace PaymentService.Presentation.Grpc.Services;
 
@@ -70,7 +72,7 @@ public class PaymentGrpcService : PaymentsService.PaymentsServiceBase
     {
         try
         {
-            await _paymentService.TransferPaymentStatusToFailedAsync(
+            await _paymentService.TransferPaymentStatusToRefundedAsync(
                 request.PaymentId,
                 context.CancellationToken);
 
@@ -86,5 +88,41 @@ public class PaymentGrpcService : PaymentsService.PaymentsServiceBase
                 IsSuccess = false,
             };
         }
+    }
+
+    public override async Task<TryPayResponse> TryPay(TryPayRequest request, ServerCallContext context)
+    {
+        PayResult payResult = await _paymentService.TryPayAsync(request.PaymentId, context.CancellationToken);
+
+        if (payResult.Success)
+        {
+            return new TryPayResponse
+            {
+                Reason = PaymentFailReason.Unspecified,
+                Success = true,
+            };
+        }
+
+        return new TryPayResponse
+        {
+            Success = false,
+            Reason = payResult.FailReason switch
+            {
+                PaymentService.Application.Models.Payments.PaymentFailReason.NotEnoughMoney
+                    => PaymentFailReason.NotEnoughMoney,
+
+                PaymentService.Application.Models.Payments.PaymentFailReason.UserIsBlocked
+                    => PaymentFailReason.UserIsBlocked,
+
+                PaymentService.Application.Models.Payments.PaymentFailReason.PaymentNotFound
+                    => PaymentFailReason.PaymentNotFound,
+
+                PaymentService.Application.Models.Payments.PaymentFailReason.WalletNotFound
+                    => PaymentFailReason.WalletNotFound,
+                Application.Models.Payments.PaymentFailReason.InternalError => PaymentFailReason.InternalError,
+                null => PaymentFailReason.Unspecified,
+                _ => PaymentFailReason.Unspecified,
+            },
+        };
     }
 }

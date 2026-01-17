@@ -10,9 +10,7 @@ public interface IPaymentService
 
     Task<long> CreatePaymentAsync(long userId, long amount, CancellationToken cancellationToken);
 
-    Task TransferPaymentStatusToSucceededAsync(long paymentId, CancellationToken cancellationToken);
-
-    Task TransferPaymentStatusToFailedAsync(long paymentId, CancellationToken cancellationToken);
+    Task<PayResult> TryPayAsync(long paymentId, CancellationToken cancellationToken);
 
     Task TransferPaymentStatusToRefundedAsync(long paymentId, CancellationToken cancellationToken);
 }

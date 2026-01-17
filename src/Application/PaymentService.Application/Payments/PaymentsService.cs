@@ -79,11 +79,6 @@ public class PaymentsService : IPaymentService
 
         long finalAmount = amount - (amount * discount.DiscountPercent / 100);
 
-        if (finalAmount <= ZeroValue)
-        {
-            throw new PaymentException("amount must be more than zero");
-        }
-
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
@@ -103,95 +98,74 @@ public class PaymentsService : IPaymentService
         return (long)paymentId;
     }
 
-    public async Task TransferPaymentStatusToSucceededAsync(long paymentId, CancellationToken cancellationToken)
+    public async Task<PayResult> TryPayAsync(long paymentId, CancellationToken cancellationToken)
     {
         Payment? payment = await _paymentRepository.GetAsync(paymentId, cancellationToken);
-
-        if (payment == null)
+        if (payment is null)
         {
-            throw new PaymentException("payment not found");
+            return new(false, PaymentFailReason.PaymentNotFound);
+        }
+
+        if (payment.Status == PaymentStatus.Succeeded)
+        {
+            return new(true, null);
         }
 
         if (payment.Status != PaymentStatus.Pending)
         {
-            throw new PaymentException("payment status must be pending");
+            await TransferPaymentStatusToFailedAsync(paymentId, cancellationToken);
+            return new(false, PaymentFailReason.InternalError);
         }
 
         Wallet? wallet = await _walletRepository.GetByIdAsync(payment.WalletId, cancellationToken);
-
-        if (wallet == null)
+        if (wallet is null)
         {
-            throw new PaymentException("wallet not found");
+            await TransferPaymentStatusToFailedAsync(paymentId, cancellationToken);
+            return new(false, PaymentFailReason.WalletNotFound);
         }
 
         if (wallet.IsBlocked)
         {
-            throw new PaymentException("wallet is blocked");
+            await TransferPaymentStatusToFailedAsync(paymentId, cancellationToken);
+            return new(false, PaymentFailReason.UserIsBlocked);
         }
 
-        if (wallet.Balance <= payment.Amount)
+        if (wallet.Balance < payment.Amount)
         {
-            throw new PaymentException("not enough money");
+            await TransferPaymentStatusToFailedAsync(paymentId, cancellationToken);
+            return new(false, PaymentFailReason.NotEnoughMoney);
         }
-
-        long newBalance = wallet.Balance - payment.Amount;
-
-        var evt = new PaymentSucceededEvent(paymentId, wallet.Id, payment.Amount, wallet.UserId);
 
         using var scope = new TransactionScope(
             TransactionScopeOption.Required,
             new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
             TransactionScopeAsyncFlowOption.Enabled);
 
+        long newBalance = wallet.Balance - payment.Amount;
+
         await _walletRepository.UpdateAsync(wallet.Id, newBalance, cancellationToken);
 
-        long? transactionId = await _walletTransactionRepository.CreateAsync(
+        long? txId = await _walletTransactionRepository.CreateAsync(
             wallet.Id,
             TransactionType.Payment,
             payment.Amount,
             cancellationToken,
             paymentId);
 
-        if (transactionId == null)
+        if (txId is null)
         {
             throw new PaymentException("transaction can't be created");
         }
 
-        await _eventPublisher.PublishAsync(evt, cancellationToken);
-        await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Succeeded, cancellationToken);
+        await TransferPaymentStatusToSucceededAsync(
+            paymentId,
+            wallet.Id,
+            payment.Amount,
+            wallet.UserId,
+            cancellationToken);
+
         scope.Complete();
-    }
-
-    public async Task TransferPaymentStatusToFailedAsync(long paymentId, CancellationToken cancellationToken)
-    {
-        Payment? payment = await _paymentRepository.GetAsync(paymentId, cancellationToken);
-
-        if (payment == null)
-        {
-            throw new PaymentException("payment not found");
-        }
-
-        Wallet? wallet = await _walletRepository.GetByIdAsync(payment.WalletId, cancellationToken);
-        if (wallet == null)
-        {
-            throw new PaymentException("wallet not found");
-        }
-
-        if (payment.Status != PaymentStatus.Pending)
-        {
-            throw new PaymentException("payment status must be pending");
-        }
-
-        var evt = new PaymentFailedEvent(paymentId, payment.WalletId, payment.Amount, wallet.UserId);
-
-        using var scope = new TransactionScope(
-            TransactionScopeOption.Required,
-            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
-            TransactionScopeAsyncFlowOption.Enabled);
-
-        await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Failed, cancellationToken);
-        await _eventPublisher.PublishAsync(evt, cancellationToken);
-        scope.Complete();
+        return new(true, null);
     }
 
     public async Task TransferPaymentStatusToRefundedAsync(long paymentId, CancellationToken cancellationToken)
@@ -231,20 +205,49 @@ public class PaymentsService : IPaymentService
 
         await _walletRepository.UpdateAsync(wallet.Id, newBalance, cancellationToken);
 
-        long? transactionId = await _walletTransactionRepository.CreateAsync(
+        long? txId = await _walletTransactionRepository.CreateAsync(
             wallet.Id,
             TransactionType.Refund,
             payment.Amount,
             cancellationToken,
             paymentId);
 
-        if (transactionId == null)
+        if (txId == null)
         {
             throw new PaymentException("transaction can't be created");
         }
 
         await _eventPublisher.PublishAsync(evt, cancellationToken);
         await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Refunded, cancellationToken);
+        scope.Complete();
+    }
+
+    private async Task TransferPaymentStatusToSucceededAsync(
+        long paymentId,
+        long walletId,
+        long amount,
+        long userId,
+        CancellationToken cancellationToken)
+    {
+        var evt = new PaymentSucceededEvent(paymentId, walletId, amount, userId);
+
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
+        await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Succeeded, cancellationToken);
+    }
+
+    private async Task TransferPaymentStatusToFailedAsync(
+        long paymentId,
+        CancellationToken cancellationToken)
+    {
+        var evt = new PaymentFailedEvent(paymentId);
+
+        using var scope = new TransactionScope(
+            TransactionScopeOption.Required,
+            new TransactionOptions { IsolationLevel = IsolationLevel.ReadCommitted },
+            TransactionScopeAsyncFlowOption.Enabled);
+
+        await _paymentRepository.UpdatePaymentAsync(paymentId, PaymentStatus.Failed, cancellationToken);
+        await _eventPublisher.PublishAsync(evt, cancellationToken);
         scope.Complete();
     }
 }
