@@ -17,7 +17,7 @@ public class PaymentRepository : IPaymentRepository
     public async Task<Payment?> GetAsync(long paymentId, CancellationToken cancellationToken)
     {
         const string sql = """
-                           select payment_id, wallet_id, status, amount, created_at, updated_at, payload
+                           select payment_id, wallet_id, status, amount, created_at, updated_at
                            from payments
                            where payment_id = @PaymentId
                            """;
